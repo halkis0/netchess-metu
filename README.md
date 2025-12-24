@@ -85,17 +85,3 @@ New rating = Old + K * (Actual - Expected)
 **Database:** AWS RDS PostgreSQL (eu-north-1)  
 **Storage:** AWS S3 (SDK integrated)  
 **Frontend:** CloudFlare Pages (planned)
-
-✅ **Completed:** ✅
-
-+ Spring Boot backend (7 controllers, 14+ endpoints)  
-+ AWS RDS PostgreSQL production database  
-+ JWT auth + role-based access control  
-+ ELO rating calculation & audit logging  
-+ Flyway migrations & API testing  
-
-🚧 **In Progress:** 🚧
-
-- React.js frontend  
-- AWS S3 configuration  
-- Testing & deployment  
