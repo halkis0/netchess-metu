@@ -42,7 +42,7 @@ netchess-metu/
 │   │   │   ├── application.properties
 │   │   │   └── db/migration/        # Flyway scripts
 │   │   └── pom.xml
-│   └── frontend/                     # React.js frontend (In Progress)
+│   └── frontend/                     
 │       ├── src/
 │       ├── public/
 │       └── package.json
