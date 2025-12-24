@@ -22,6 +22,12 @@ public class RegisterRequest {
     @Size(max = 100)
     private String fullName;
 
+    @NotBlank(message = "Student number is required")
+    @Size(min = 7, max = 20)
+    private String studentNumber;
+
+    private String role;
+
     public String getUsername() {
         return username;
     }
@@ -53,4 +59,12 @@ public class RegisterRequest {
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
+
+    public void setStudentNumber(String studentNumber) { this.studentNumber = studentNumber; }
+
+    public String getStudentNumber() { return studentNumber; }
+
+    public String getRole() { return role; }
+
+    public void setRole(String role) { this.role = role; }
 }

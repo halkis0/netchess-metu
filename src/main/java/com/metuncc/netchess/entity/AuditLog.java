@@ -19,6 +19,7 @@ public class AuditLog {
     }
 
     @Id
+    @GeneratedValue
     private UUID id;
 
     @Enumerated(EnumType.STRING)

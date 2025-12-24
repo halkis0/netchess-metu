@@ -11,15 +11,19 @@ import com.metuncc.netchess.repository.TournamentRepository;
 import com.metuncc.netchess.repository.UserRepository;
 import com.metuncc.netchess.service.StorageService;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -94,32 +98,56 @@ public class GameController {
     }
 
     @PostMapping("/upload-file")
-    public ResponseEntity<?> uploadGameFile(@RequestParam("file") MultipartFile file,
-                                           @RequestParam(required = false) UUID tournamentId,
-                                           Authentication authentication) {
-        String username = authentication.getName();
-        User uploader = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    public ResponseEntity<?> uploadGameFile(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(required = false) UUID tournamentId,
+            @RequestParam("whitePlayerId") UUID whitePlayerId,
+            @RequestParam("blackPlayerId") UUID blackPlayerId,
+            @RequestParam("result") String result,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate playedAt,
+            Authentication authentication) {
 
-        Tournament tournament = null;
-        if (tournamentId != null) {
-            tournament = tournamentRepository.findById(tournamentId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Tournament not found"));
+        try {
+            String username = authentication.getName();
+            User uploader = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+            User whitePlayer = userRepository.findById(whitePlayerId)
+                    .orElseThrow(() -> new ResourceNotFoundException("White player not found"));
+            User blackPlayer = userRepository.findById(blackPlayerId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Black player not found"));
+
+            Tournament tournament = null;
+            if (tournamentId != null) {
+                tournament = tournamentRepository.findById(tournamentId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Tournament not found"));
+            }
+
+            String pgnContent = new String(file.getBytes(), StandardCharsets.UTF_8);
+
+            String s3Key = storageService.uploadFile(file);
+
+            Game game = new Game();
+            game.setId(UUID.randomUUID());
+            game.setS3Key(s3Key);
+            game.setPgnContent(pgnContent);
+            game.setWhitePlayer(whitePlayer.toString());
+            game.setBlackPlayer(blackPlayer.toString());
+            game.setResult(result);
+            game.setGameDate(playedAt != null ? playedAt : LocalDate.now());
+            game.setUploadedBy(uploader);
+            game.setTournament(tournament);
+            game.setApproved(false);
+            game.setCreatedAt(LocalDateTime.now());
+
+            gameRepository.save(game);
+
+            return ResponseEntity.ok(game);
+
+        } catch (IOException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Failed to read file: " + e.getMessage()));
         }
-
-        String s3Key = storageService.uploadFile(file);
-
-        Game game = new Game();
-        game.setId(UUID.randomUUID());
-        game.setS3Key(s3Key);
-        game.setUploadedBy(uploader);
-        game.setTournament(tournament);
-        game.setApproved(false);
-        game.setCreatedAt(LocalDateTime.now());
-
-        gameRepository.save(game);
-
-        return ResponseEntity.ok(game);
     }
 
     @PatchMapping("/{id}/approve")

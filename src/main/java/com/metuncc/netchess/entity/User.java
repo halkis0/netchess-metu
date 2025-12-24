@@ -37,6 +37,9 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
+    @Column(unique = true, nullable = false, length = 20)
+    private String studentNumber;
+
     @NotBlank
     @Email
     @Size(max = 100)
@@ -85,6 +88,10 @@ public class User {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    public void setStudentNumber(String studentNumber) { this.studentNumber = studentNumber; }
+
+    public String getStudentNumber() { return studentNumber; }
 
     public String getEmail() {
         return email;

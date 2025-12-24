@@ -46,9 +46,14 @@ public class AuthController {
             return ResponseEntity.badRequest().body(new MessageResponse("Email already exists"));
         }
 
+        if (userRepository.findByStudentNumber(request.getStudentNumber()).isPresent()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Student number already exists"));
+        }
+
         User user = new User();
         user.setId(UUID.randomUUID());
         user.setUsername(request.getUsername());
+        user.setStudentNumber(request.getStudentNumber());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setFullName(request.getFullName());

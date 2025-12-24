@@ -86,7 +86,7 @@ public class EloRatingService {
         history.setNewRating(newRating);
         history.setRatingChange(ratingChange);
         history.setGame(game);
-        history.setKFactor(kFactor);
+        history.setkFactor(kFactor);
 
         ratingHistoryRepository.save(history);
 
