@@ -11,6 +11,8 @@ import Manager from './pages/Manager';
 import Admin from './pages/Admin';
 import GameViewer from './pages/GameViewer';
 import PuzzleManagement from './pages/PuzzleManagement';
+import PostDetail from "./pages/PostDetail";
+import Forum from "./pages/Forum";
 
 const PrivateRoute = ({ children, roles }) => {
     if (!authService.isAuthenticated()) {
@@ -41,11 +43,7 @@ function AppContent() {
                 <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
                 <Route path="/games" element={<PrivateRoute><Games /></PrivateRoute>} />
                 <Route path="/games/:id/view" element={<PrivateRoute><GameViewer /></PrivateRoute>} />
-                <Route path="/tournaments" element={
-                    <PrivateRoute roles={['ORGANIZER', 'ADMIN']}>
-                        <Tournaments />
-                    </PrivateRoute>
-                } />
+                <Route path="/tournaments" element={<PrivateRoute><Tournaments /></PrivateRoute>} />
                 <Route path="/manager" element={
                     <PrivateRoute roles={['MANAGER', 'ADMIN']}>
                         <Manager />
@@ -61,6 +59,8 @@ function AppContent() {
                         <PuzzleManagement />
                     </PrivateRoute>
                 } />
+                <Route path="/forum" element={<PrivateRoute><Forum /></PrivateRoute>} />
+                <Route path="/forum/:id" element={<PrivateRoute><PostDetail /></PrivateRoute>} />
             </Routes>
         </>
     );

@@ -81,4 +81,17 @@ export const puzzleAPI = {
     delete: (id) => api.delete(`/puzzles/${id}`),
 };
 
+export const postAPI = {
+    getAll: () => api.get('/posts'),
+    getById: (id) => api.get(`/posts/${id}`),
+    create: (data) => api.post('/posts', data),
+    update: (id, data) => api.put(`/posts/${id}`, data),
+    delete: (id) => api.delete(`/posts/${id}`),
+    togglePin: (id) => api.patch(`/posts/${id}/pin`),
+    toggleLock: (id) => api.patch(`/posts/${id}/lock`),
+    getComments: (postId) => api.get(`/posts/${postId}/comments`),
+    addComment: (postId, data) => api.post(`/posts/${postId}/comments`, data),
+    deleteComment: (postId, commentId) => api.delete(`/posts/${postId}/comments/${commentId}`),
+};
+
 export default api;

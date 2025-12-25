@@ -50,7 +50,7 @@ public class PuzzleController {
         DailyPuzzle existing = puzzleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Puzzle not found"));
 
-        existing.setPuzzleDate();
+        existing.setPuzzleDate(puzzle.getPuzzleDate());
         existing.setFenPosition(puzzle.getFenPosition());
         existing.setSolution(puzzle.getSolution());
         existing.setMovesCount(puzzle.getMovesCount());

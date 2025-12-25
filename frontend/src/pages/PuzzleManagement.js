@@ -74,6 +74,11 @@ const PuzzleManagement = () => {
         setError('');
         setSuccess('');
 
+        if (!editingPuzzle || !editingPuzzle.id) {
+            setError('Invalid puzzle ID');
+            return;
+        }
+
         try {
             await puzzleAPI.update(editingPuzzle.id, editingPuzzle);
             setSuccess('Puzzle updated successfully!');
@@ -85,6 +90,11 @@ const PuzzleManagement = () => {
     };
 
     const handleDeletePuzzle = async (puzzleId, puzzleDate) => {
+        if (!puzzleId) {
+            setError('Invalid puzzle ID');
+            return;
+        }
+
         if (!window.confirm(`Are you sure you want to delete puzzle for ${puzzleDate}?`)) {
             return;
         }

@@ -17,9 +17,8 @@ const Navbar = () => {
             <ul className="navbar-nav">
                 <li><Link to="/dashboard" className="nav-link">Dashboard</Link></li>
                 <li><Link to="/games" className="nav-link">Games</Link></li>
-                {authService.hasAnyRole(['ORGANIZER', 'ADMIN']) && (
-                    <li><Link to="/tournaments" className="nav-link">Tournaments</Link></li>
-                )}
+                <li><Link to="/tournaments" className="nav-link">Tournaments</Link></li>
+
                 {authService.hasAnyRole(['MANAGER', 'ADMIN']) && (
                     <li><Link to="/manager" className="nav-link">Manager</Link></li>
                 )}
@@ -29,6 +28,7 @@ const Navbar = () => {
                 {(authService.hasRole('ORGANIZER') || authService.hasRole('ADMIN')) && (
                     <Link to="/puzzles" className="nav-link">Puzzles</Link>
                 )}
+                <Link to="/forum" className="nav-link">Forum</Link>
                 <li>
           <span className={`badge badge-${user?.roles[0]?.toLowerCase() || 'player'}`}>
             {user?.username}

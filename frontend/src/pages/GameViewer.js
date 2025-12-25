@@ -28,7 +28,7 @@ const GameViewer = () => {
                 await loadPGN(response.data.s3Key);
             }
         } catch (err) {
-            setError('Failed to load game');
+            setError('Failed to load games');
         } finally {
             setLoading(false);
         }

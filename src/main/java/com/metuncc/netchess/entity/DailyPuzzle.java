@@ -48,7 +48,11 @@ public class DailyPuzzle {
 
     public UUID getUUID() { return id; }
 
-    public void setPuzzleDate() { this.puzzleDate = LocalDate.now(); }
+    public UUID getId() { return id; }
+
+    public void setId(UUID id) { this.id = id; }
+
+    public void setPuzzleDate(LocalDate date) { this.puzzleDate = date; }
 
     public LocalDate getPuzzleDate() { return puzzleDate; }
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { gameAPI, userAPI } from '../services/api';
+import { authService } from '../services/auth';
 
 const Games = () => {
     const [games, setGames] = useState([]);
@@ -16,6 +17,9 @@ const Games = () => {
         result: '1-0',
         playedAt: new Date().toISOString().split('T')[0]
     });
+
+    const user = authService.getUser();
+    const canManage = user && (user.roles.includes('MANAGER') || user.roles.includes('ORGANIZER') || user.roles.includes('ADMIN'));
 
     useEffect(() => {
         fetchGames();
@@ -71,6 +75,32 @@ const Games = () => {
         }
     };
 
+    const handleApprove = async (gameId) => {
+        setError('');
+        setSuccess('');
+        try {
+            await gameAPI.approve(gameId);
+            setSuccess('Game approved successfully!');
+            fetchGames();
+        } catch (err) {
+            setError(err.response?.data?.message || 'Approval failed');
+        }
+    };
+
+    const handleReject = async (gameId) => {
+        if (!window.confirm('Are you sure you want to reject this game?')) return;
+
+        setError('');
+        setSuccess('');
+        try {
+            await gameAPI.reject(gameId);
+            setSuccess('Game rejected successfully!');
+            fetchGames();
+        } catch (err) {
+            setError(err.response?.data?.message || 'Rejection failed');
+        }
+    };
+
     if (loading) return <div className="container"><div className="loading">Loading...</div></div>;
 
     return (
@@ -78,9 +108,11 @@ const Games = () => {
             <div className="card">
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
                     <h2 className="card-title" style={{marginBottom: 0}}>Games</h2>
-                    <button onClick={() => setShowUpload(!showUpload)} className="btn btn-primary">
-                        {showUpload ? 'Cancel' : 'Upload Game'}
-                    </button>
+                    {canManage && (
+                        <button onClick={() => setShowUpload(!showUpload)} className="btn btn-primary">
+                            {showUpload ? 'Cancel' : 'Upload Game'}
+                        </button>
+                    )}
                 </div>
 
                 {error && <div className="alert alert-error">{error}</div>}
@@ -168,7 +200,7 @@ const Games = () => {
                         <th>Result</th>
                         <th>Date</th>
                         <th>Status</th>
-                        <th>S3 File</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -184,32 +216,47 @@ const Games = () => {
                                 <td style={{fontWeight: '600'}}>{game.result || 'N/A'}</td>
                                 <td>{game.gameDate || 'N/A'}</td>
                                 <td>
-                    <span className={`badge ${game.approved ? 'badge-admin' : 'badge-player'}`}>
-                      {game.approved ? 'Approved' : 'Pending'}
-                    </span>
+                                    <span className={`badge ${game.approved ? 'badge-admin' : 'badge-player'}`}>
+                                        {game.approved ? 'Approved' : 'Pending'}
+                                    </span>
                                 </td>
                                 <td>
-                                    {game.s3Key && (
-                                        <div style={{display: 'flex', gap: '0.5rem'}}>
-                                            <Link
-                                                to={`/games/${game.id}/view`}
-                                                style={{
-                                                    color: 'var(--primary-red)',
-                                                    textDecoration: 'none',
-                                                    fontWeight: 500
-                                                }}>
-                                                View Game
-                                            </Link>
-                                            <span style={{color: 'var(--light-gray)'}}>|</span>
-                                            <a href={`https://netchess-pgn-files-01.s3.eu-north-1.amazonaws.com/${game.s3Key}`}
-                                               target="_blank"
-                                               rel="noopener noreferrer"
-                                               download
-                                               style={{color: 'var(--gray)', textDecoration: 'none', fontWeight: 500}}>
-                                                Download
-                                            </a>
-                                        </div>
-                                    )}
+                                    <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap'}}>
+                                        {game.s3Key && (
+                                            <>
+                                                <Link
+                                                    to={`/games/${game.id}/view`}
+                                                    className="btn btn-secondary"
+                                                    style={{padding: '0.5rem 1rem', fontSize: '0.875rem'}}>
+                                                    View
+                                                </Link>
+                                                <a href={`https://netchess-pgn-files-01.s3.eu-north-1.amazonaws.com/${game.s3Key}`}
+                                                   target="_blank"
+                                                   rel="noopener noreferrer"
+                                                   download
+                                                   className="btn btn-secondary"
+                                                   style={{padding: '0.5rem 1rem', fontSize: '0.875rem'}}>
+                                                    Download
+                                                </a>
+                                            </>
+                                        )}
+                                        {canManage && !game.approved && (
+                                            <>
+                                                <button
+                                                    onClick={() => handleApprove(game.id)}
+                                                    className="btn btn-primary"
+                                                    style={{padding: '0.5rem 1rem', fontSize: '0.875rem'}}>
+                                                    Approve
+                                                </button>
+                                                <button
+                                                    onClick={() => handleReject(game.id)}
+                                                    className="btn btn-danger"
+                                                    style={{padding: '0.5rem 1rem', fontSize: '0.875rem'}}>
+                                                    Reject
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
                                 </td>
                             </tr>
                         ))

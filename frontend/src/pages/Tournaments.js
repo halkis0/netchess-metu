@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { tournamentAPI, roomAPI } from '../services/api';
+import {authService} from "../services/auth";
 
 const Tournaments = () => {
     const [tournaments, setTournaments] = useState([]);
@@ -8,6 +9,8 @@ const Tournaments = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [showCreate, setShowCreate] = useState(false);
+    const user = authService.getUser();
+    const canCreate = user && (user.roles.includes('ORGANIZER') || user.roles.includes('ADMIN'));
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -82,9 +85,11 @@ const Tournaments = () => {
             <div className="card">
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
                     <h2 className="card-title" style={{marginBottom: 0}}>Tournaments</h2>
+                    {canCreate && (
                     <button onClick={() => setShowCreate(!showCreate)} className="btn btn-primary">
                         {showCreate ? 'Cancel' : 'Create Tournament'}
                     </button>
+                )}
                 </div>
 
                 {error && <div className="alert alert-error">{error}</div>}
@@ -164,7 +169,11 @@ const Tournaments = () => {
                                     </select>
                                 </div>
                             </div>
-                            <button type="submit" className="btn btn-primary">Create Tournament</button>
+                            {canCreate && (
+                                <button onClick={() => setShowCreate(!showCreate)} className="btn btn-primary">
+                                    {showCreate ? 'Cancel' : 'Create Tournament'}
+                                </button>
+                            )}
                         </form>
                     </div>
                 )}
