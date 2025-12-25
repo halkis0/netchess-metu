@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { postAPI } from '../services/api';
 import { authService } from '../services/auth';
-import ChessNotation from '../components/ChessNotation';
+import ChessNotation from '../pages/ChessNotation';
 
 const PostDetail = () => {
     const { id } = useParams();
