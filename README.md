@@ -80,8 +80,75 @@ K-factor: 24 (≤30 games), 16 (>30 games)
 New rating = Old + K * (Actual - Expected)
 ```
 
+Prerequisites
+
+Java 17+
+Node.js 18+
+PostgreSQL (or use AWS RDS)
+Maven 3.9+
+
 ## Cloud Infrastructure
 
 **Database:** AWS RDS PostgreSQL (eu-north-1)  
 **Storage:** AWS S3 (SDK integrated)  
-**Frontend:** CloudFlare Pages (planned)
+
+## Quick Start Guide
+
+### Backend Setup
+
+1. Configure Database
+   
+   Edit `src/main/resources/application.properties`:
+```properties
+   spring.datasource.url=jdbc:postgresql://your-db-host:5432/netchess_db
+   spring.datasource.username=your-username
+   spring.datasource.password=your-password
+
+   aws.access.key.id=your-access-key
+   aws.secret.access.key=your-secret-key
+   aws.s3.bucket.name=your-bucket-name
+   aws.s3.region=eu-north-1
+```
+
+2. Run Backend
+```bash
+   cd code/backend
+   mvn clean install
+   mvn spring-boot:run
+```
+   
+   Backend runs on `http://localhost:8080`
+
+### Frontend Setup
+
+1. Install Dependencies
+```bash
+   cd code/frontend
+   npm install
+```
+
+2. Configure API URL
+   
+   Create `.env` file:
+```
+   REACT_APP_API_URL=http://localhost:8080/api
+   GENERATE_SOURCEMAP=false
+```
+
+3. Run Frontend
+```bash
+   npm start
+```
+   
+   Frontend runs on `http://localhost:3000`
+
+### Database Migrations
+
+Flyway runs automatically on startup. For manual migration:
+```bash
+mvn flyway:migrate
+```
+
+---
+
+**Note:** For production deployment, configure CORS properly and use environment variables for all credentials.
