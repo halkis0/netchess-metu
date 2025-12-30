@@ -21,7 +21,7 @@ Platform for METU chess club featuring tournament management, game archiving (PG
 **Backend:** Spring Boot 4.0, Spring Security 7.0 (JWT), Spring Data JPA, Java 17  
 **Database:** AWS RDS PostgreSQL 17.6 (eu-north-1), Flyway migrations  
 **Storage:** AWS S3 (PGN files)  
-**Frontend:** React.js (planned), CloudFlare Pages  
+**Frontend:** React.js
 **Build:** Maven
 
 ## Repository Structure
